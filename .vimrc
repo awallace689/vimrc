@@ -1,40 +1,107 @@
 "MINE
 "
+set background=dark
+set t_Co=256
+
+fun! CPPFormatSettings()
+  setlocal equalprg=clang-format\ -style=google
+endfun
+
+autocmd FileType c,cpp call CPPFormatSettings()
+
+"Ale stuff
 let g:ale_disable_lsp = 1
+
+function CheckIfFileExists(filename)
+  if filereadable(a:filename)
+    return 1
+  endif
+
+  return 0
+endfunction
+
 "Plug
 call plug#begin('~/.vim/plugged')
 
-Plug 'embark-theme/vim', { 'as': 'embark' }
-Plug 'mkitt/tabline.vim'
-Plug 'kshenoy/vim-signature'
-Plug 'dense-analysis/ale'
-Plug 'axelf4/vim-strip-trailing-whitespace'
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'mattn/emmet-vim'
-Plug 'jiangmiao/auto-pairs'
-Plug 'pangloss/vim-javascript'
+Plug 'JamshedVesuna/vim-markdown-preview'
 Plug 'MaxMEllon/vim-jsx-pretty'
+Plug 'axelf4/vim-strip-trailing-whitespace'
+Plug 'challenger-deep-theme/vim', { 'as': 'challenger-deep' }
+Plug 'cocopon/iceberg.vim'
+Plug 'cseelus/vim-colors-lucid'
+Plug 'cseelus/vim-colors-lucid'
+Plug 'dense-analysis/ale'
+Plug 'embark-theme/vim', { 'as': 'embark' }
+Plug 'gkeep/iceberg-dark'
+Plug 'itchyny/lightline.vim'
+Plug 'jaredgorski/SpaceCamp'
+Plug 'jiangmiao/auto-pairs'
+Plug 'jremmen/vim-ripgrep'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'kshenoy/vim-signature'
+Plug 'mattn/emmet-vim'
+Plug 'mkitt/tabline.vim'
+Plug 'morhetz/gruvbox'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'neovimhaskell/haskell-vim'
+Plug 'pangloss/vim-javascript'
 Plug 'prettier/vim-prettier', {
   \ 'do': 'npm install',
   \ 'for': ['javascript', 'typescript', 'css', 'less', 'scss', 'json', 'graphql', 'markdown', 'vue', 'yaml', 'html'] }
-
-let g:coc_global_extensions = [
-  \ 'coc-tsserver',
-  \ 'coc-html',
-  \ 'coc-css'
-  \ ]
+Plug 'sheerun/vim-polyglot'
+Plug 'shinchu/lightline-gruvbox.vim'
+Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-rails'
+Plug 'vim-ruby/vim-ruby'
 
 call plug#end()
 "END Plug 
 
-set switchbuf=usetab
+"FZF
+nnoremap <silent> <leader>D :FZF /Users/asdff01/.rbenv/versions/3.0.2/lib/ruby/gems/<CR>
+nnoremap <silent> <leader>F :FZF ~/railsproj/myapp<CR>
+
+"set netrw tree view
+let g:netrw_liststyle = 3
+
+"js syntax highlighting
+let g:vim_jsx_pretty_colorful_config = 1
+
+"Enable markdown preview / grip
+let vim_markdown_preview_github=1
+
+"Set colorscheme
+let g:gruvbox_italic=1
+colorscheme spacecamp
+
+"Lightline extension theme
+let g:lightline = { 'colorscheme': 'powerlineish'}
 
 "emmet
 let g:user_emmet_leader_key=','
 
-let g:ale_linters = {'cpp': ['clang'], 'c': ['clang']}
+"""""""""""""""""
+""""BEGIN ALE""""
+"""""""""""""""""
 
-"Gitgutter
+let g:ale_linters = {'cpp': ['clang'], 'c': ['clang'], 'ruby': ['rubocop']}
+" Disable GHC linter if in a Haskell Stack project
+if (CheckIfFileExists("./stack.yaml") == 1)
+  let g:ale_linters = {
+  \   'haskell': ['stack-build'],
+  \}
+endif
+
+let g:ale_linters_explicit = 0
+
+"""""""""""""""
+""""END ALE""""
+"""""""""""""""
+
+"""""""""""""""""""""""
+""""BEGIN Gitgutter""""
+"""""""""""""""""""""""
+"
 "set gitgutter sign column bg color to theme
 autocmd ColorScheme * highlight! link SignColumn LineNr
 
@@ -46,19 +113,18 @@ let g:gitgutter_set_sign_backgrounds = 1
 
 "update swap every 100ms (for gitgutter)
 set updatetime=4000
-"END Gitgutter
 
-"Set colorscheme
-set termguicolors
-colorscheme embark
+
+"""""""""""""""""""""
+""""END Gitgutter""""
+"""""""""""""""""""""
+
+"indentLine json settings
+autocmd Filetype json let g:indentLine_enabled = 0
+
 
 "set case insensitive search
 set ignorecase
-
-"set MAC hotkey shortcuts
-"
-"END MINE
-"
 
 " Don't try to be vi compatible
 set nocompatible
@@ -75,7 +141,7 @@ syntax on
 filetype plugin indent on
 
 " TODO: Pick a leader key
-" let mapleader = ","
+" let mapleader = \","
 
 " Security
 set modelines=0
@@ -125,10 +191,22 @@ set laststatus=2
 set showmode
 set showcmd
 
+"terminal colors
+set termguicolors
+
 "python stuff
 au FileType python setl shiftwidth=2 tabstop=2 softtabstop=2
 
-"coc.nvim
+"""""""""""""""""""""
+""""""BEGIN COC""""""
+"""""""""""""""""""""
+
+"CoC language servers (not totally necessary)
+let g:coc_global_extensions = [
+  \ 'coc-tsserver',
+  \ 'coc-html',
+  \ 'coc-css'
+  \ ]
 " TextEdit might fail if hidden is not set.
 set hidden
 
@@ -295,5 +373,7 @@ nnoremap <silent><nowait> <space>k  :<C-u>CocPrev<CR>
 " Resume latest coc list.
 nnoremap <silent><nowait> <space>p  :<C-u>CocListResume<CR>
 
-"indentLine json settings
-autocmd Filetype json let g:indentLine_enabled = 0
+"""""""""""""""""""
+""""""END COC""""""
+"""""""""""""""""""
+

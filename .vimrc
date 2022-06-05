@@ -8,9 +8,18 @@ fun! CPPFormatSettings()
 endfun
 
 autocmd FileType c,cpp call CPPFormatSettings()
+au BufRead,BufNewFile *.ex,*.exs set filetype=elixir
 
 "Ale stuff
 let g:ale_disable_lsp = 1
+let g:ale_sign_error = '✘'
+let g:ale_sign_warning = '⚠'
+let g:ale_lint_on_enter = 1
+highlight ALEErrorSign ctermbg=NONE ctermfg=red
+highlight ALEWarningSign ctermbg=NONE ctermfg=yellow
+let g:ale_linters_explicit = 0
+let g:ale_lint_on_save = 1
+let g:ale_fix_on_save = 1
 
 function CheckIfFileExists(filename)
   if filereadable(a:filename)
@@ -23,6 +32,9 @@ endfunction
 "Plug
 call plug#begin('~/.vim/plugged')
 
+Plug 'elixir-editors/vim-elixir'
+Plug 'Yggdroot/indentLine'
+Plug 'bluz71/vim-moonfly-colors'
 Plug 'JamshedVesuna/vim-markdown-preview'
 Plug 'MaxMEllon/vim-jsx-pretty'
 Plug 'axelf4/vim-strip-trailing-whitespace'
@@ -51,15 +63,47 @@ Plug 'prettier/vim-prettier', {
 Plug 'sheerun/vim-polyglot'
 Plug 'shinchu/lightline-gruvbox.vim'
 Plug 'tpope/vim-fugitive'
-Plug 'tpope/vim-rails'
-Plug 'vim-ruby/vim-ruby'
+Plug 'leafgarland/typescript-vim'
+"BEGIN Rails - Don't forget to 'gem install gem-ctags'
+" Source: https://chodounsky.com/2016/12/09/using-tags-to-browse-ruby-and-gem-source-with-vim/
+"
+" [ctags]
+" Run:
+"   gem install gem-ctags
+"   gem ctags
+"
+"   mkdir -p ~/.rbenv/plugins
+"   git clone git://github.com/tpope/rbenv-ctags.git \
+"     ~/.rbenv/plugins/rbenv-ctags
+"   rbenv ctags
+" Run: [in vim] ':Rtags' to enable ctag navigation 'ctrl + ]'
+" [END ctags]
+"
+" [view Rails source]
+" 1. Set $EDITOR='vim'
+" 2. exec 'bundle open rails' in project
+" 3. [in vim] ':FZF ../' to search project gem installations
+" [END view Rails source]
+"
+"
+"Plug 'vim-ruby/vim-ruby'
+"Plug 'tpope/vim-rails'
+"Plug 'tpope/vim-rbenv'
+"Plug 'tpope/vim-bundler'
+"END Rails
+
 
 call plug#end()
 "END Plug 
 
+"indentLine json settings (not native VIM)
+autocmd Filetype json let g:indentLine_enabled = 0
+
+"indentLine character (not native VIM)
+let g:indentLine_char = '¦'
+
 "FZF
-nnoremap <silent> <leader>D :FZF /Users/asdff01/.rbenv/versions/3.0.2/lib/ruby/gems/<CR>
-nnoremap <silent> <leader>F :FZF ~/railsproj/myapp<CR>
+nnoremap <silent> <leader>F :FZF ~/projects/elixir/getting-started/basics/<CR>
 
 "set netrw tree view
 let g:netrw_liststyle = 3
@@ -72,7 +116,7 @@ let vim_markdown_preview_github=1
 
 "Set colorscheme
 let g:gruvbox_italic=1
-colorscheme spacecamp
+colorscheme moonfly
 
 "Lightline extension theme
 let g:lightline = { 'colorscheme': 'powerlineish'}
@@ -84,7 +128,14 @@ let g:user_emmet_leader_key=','
 """"BEGIN ALE""""
 """""""""""""""""
 
-let g:ale_linters = {'cpp': ['clang'], 'c': ['clang'], 'ruby': ['rubocop']}
+
+let g:ale_linters = {'cpp': ['clang'], 'c': ['clang'], 'ruby': ['rubocop'], 'elixir': ['elixir-ls'] }
+"Elixir
+let g:ale_fixers = {'elixir': ['mix_format']}
+"END Elixir
+
+let g:ale_elixir_elixir_ls_release = '/home/asdff01/projects/elixir/elixir-ls/'
+"
 " Disable GHC linter if in a Haskell Stack project
 if (CheckIfFileExists("./stack.yaml") == 1)
   let g:ale_linters = {
@@ -101,7 +152,7 @@ let g:ale_linters_explicit = 0
 """""""""""""""""""""""
 """"BEGIN Gitgutter""""
 """""""""""""""""""""""
-"
+
 "set gitgutter sign column bg color to theme
 autocmd ColorScheme * highlight! link SignColumn LineNr
 
@@ -119,9 +170,28 @@ set updatetime=4000
 """"END Gitgutter""""
 """""""""""""""""""""
 
-"indentLine json settings
-autocmd Filetype json let g:indentLine_enabled = 0
+"""""""""""""""""""""
+""""""VIM CONFIG"""""
+"""""""""""""""""""""
+inoremap jj <ESC>
 
+"disable all auto-newline in insert mode
+set textwidth=0 wrapmargin=0
+
+set foldlevel=0
+
+"set relative line numbers
+set relativenumber
+
+"fold based on syntax
+"  zc: close fold
+"  zo: open fold
+"  za: toggle fold
+"  z<shift + <above>>:  recursive
+"set foldmethod=syntax
+
+"set horizontal line marker
+set cursorline
 
 "set case insensitive search
 set ignorecase
@@ -158,7 +228,7 @@ set visualbell
 " Encoding
 set encoding=utf-8
 
-" Whitespace
+" Whitespace (partially-overwritten)
 set wrap
 set shiftwidth=2
 set textwidth=79
@@ -198,8 +268,15 @@ set termguicolors
 au FileType python setl shiftwidth=2 tabstop=2 softtabstop=2
 
 """""""""""""""""""""
+""""END VIM CONFIG"""
+"""""""""""""""""""""
+
+"""""""""""""""""""""
 """"""BEGIN COC""""""
 """""""""""""""""""""
+
+"ElixirLS magic to set project root @ mix.exs parent folder
+autocmd FileType elixir let b:coc_root_patterns = ['mix.exs']
 
 "CoC language servers (not totally necessary)
 let g:coc_global_extensions = [

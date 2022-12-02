@@ -2,12 +2,13 @@
 "
 set background=dark
 set t_Co=256
+"c/c++ clang-format support
+"fun! CPPFormatSettings()
+"  setlocal equalprg=clang-format\ -style=google
+"endfun
+"autocmd FileType c,cpp call CPPFormatSettings()
 
-fun! CPPFormatSettings()
-  setlocal equalprg=clang-format\ -style=google
-endfun
-
-autocmd FileType c,cpp call CPPFormatSettings()
+"elixir auto filetype
 au BufRead,BufNewFile *.ex,*.exs set filetype=elixir
 
 "Ale stuff
@@ -64,6 +65,8 @@ Plug 'sheerun/vim-polyglot'
 Plug 'shinchu/lightline-gruvbox.vim'
 Plug 'tpope/vim-fugitive'
 Plug 'leafgarland/typescript-vim'
+Plug 'lighthaus-theme/vim-lighthaus'
+
 "BEGIN Rails - Don't forget to 'gem install gem-ctags'
 " Source: https://chodounsky.com/2016/12/09/using-tags-to-browse-ruby-and-gem-source-with-vim/
 "
@@ -103,7 +106,7 @@ autocmd Filetype json let g:indentLine_enabled = 0
 let g:indentLine_char = '¦'
 
 "FZF
-nnoremap <silent> <leader>F :FZF ~/projects/elixir/getting-started/basics/<CR>
+nnoremap <silent> <leader>F :FZF ~/projects/elixir/<CR>
 
 "set netrw tree view
 let g:netrw_liststyle = 3
@@ -116,13 +119,13 @@ let vim_markdown_preview_github=1
 
 "Set colorscheme
 let g:gruvbox_italic=1
-colorscheme moonfly
+colorscheme moonfly "moonfly? lighthaus?
 
 "Lightline extension theme
-let g:lightline = { 'colorscheme': 'powerlineish'}
+let g:lightline = { 'colorscheme': 'lighthaus'}
 
 "emmet
-let g:user_emmet_leader_key=','
+"let g:user_emmet_leader_key=','
 
 """""""""""""""""
 """"BEGIN ALE""""
@@ -453,4 +456,3 @@ nnoremap <silent><nowait> <space>p  :<C-u>CocListResume<CR>
 """""""""""""""""""
 """"""END COC""""""
 """""""""""""""""""
-
